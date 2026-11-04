@@ -1,0 +1,812 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Alexander Aoun</title>
+<meta name="description" content="Alexander Aoun, biomedical electronics engineer at ETH Zurich. Low-power biosensing, patient-safe hardware, control and signal processing.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400..800&family=Hanken+Grotesk:wght@400..700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a solder-mask green opening band holding the name and a live filter scope, then a light page of ruled rows;
+   projects are one-line rows that open a detail panel from the right. */
+:root {
+  --paper: #eff2ee;
+  --sheet: #f7f8f6;
+  --ink: #101a15;
+  --muted: #55655c;
+  --rule: #cdd7d1;
+  --accent: #0b6a4b;
+  --band: #0a4f3a;
+  --band-deep: #083f2e;
+  --band-ink: #eaf4ee;
+  --band-muted: #a3c6b5;
+  --band-rule: #1d6650;
+  --trace-raw: #5c917b;
+  --trace-est: #c9f1db;
+  --mat: #ffffff;
+  --display: "Unbounded", "Arial Black", "Helvetica Neue", Arial, sans-serif;
+  --body: "Hanken Grotesk", "Helvetica Neue", Arial, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #0c110f; --sheet: #121a16; --ink: #e3ebe6; --muted: #93a49b; --rule: #24302a; --accent: #6cc39d;
+    --band: #0a3d2d; --band-deep: #072f22; --band-rule: #1a5643; --mat: #e8ede9;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #0c110f; --sheet: #121a16; --ink: #e3ebe6; --muted: #93a49b; --rule: #24302a; --accent: #6cc39d;
+  --band: #0a3d2d; --band-deep: #072f22; --band-rule: #1a5643; --mat: #e8ede9;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0; background: var(--paper); color: var(--ink);
+  font-family: var(--body); font-size: 1.1rem; line-height: 1.6; -webkit-font-smoothing: antialiased;
+}
+body.lock { overflow: hidden; }
+body::before {
+  content: ""; position: fixed; inset: 0 0 auto;
+  height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--band);
+}
+a { color: var(--accent); text-underline-offset: 3px; text-decoration-thickness: 1px; }
+a:hover { text-decoration-thickness: 2px; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+p { margin: 0; max-width: 64ch; }
+.gut { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.wrap { max-width: 1140px; margin: 0 auto; }
+.label { font-family: var(--mono); font-size: 0.74rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+
+/* ---------- header ---------- */
+.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 6; background: var(--band); color: var(--band-ink); }
+.top .wrap { display: flex; justify-content: space-between; align-items: center; gap: 10px 24px; padding-block: 14px; flex-wrap: wrap; }
+.mark { font-family: var(--display); font-weight: 700; font-size: 0.95rem; color: var(--band-ink); text-decoration: none; letter-spacing: 0.02em; }
+.top ul { display: flex; flex-wrap: wrap; gap: 6px 22px; list-style: none; margin: 0; padding: 0; }
+.top ul a { font-family: var(--mono); font-size: 0.74rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--band-muted); text-decoration: none; }
+.top ul a:hover { color: var(--band-ink); }
+.top ul li.ext a { color: var(--band-ink); text-decoration: underline; text-underline-offset: 4px; }
+.top ul li.ext:first-of-type { padding-left: 22px; border-left: 1px solid var(--band-rule); }
+
+/* ---------- opening band ---------- */
+.band { background: var(--band); color: var(--band-ink); }
+.band .wrap { padding-block: 44px 64px; }
+.eyebrow { font-family: var(--mono); font-size: 0.78rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--band-muted); }
+h1 {
+  font-family: var(--display); font-weight: 800; text-transform: uppercase;
+  font-size: clamp(2.6rem, 11.5vw, 9.6rem); line-height: 0.92; letter-spacing: -0.03em; margin: 20px 0 0;
+}
+h1 .line { display: block; overflow: hidden; padding-bottom: 0.04em; }
+h1 .line > span { display: block; white-space: nowrap; width: max-content; }
+h1 .line + .line > span { color: var(--trace-est); }
+.intro { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 24px 56px; margin-top: 34px; align-items: end; }
+.intro .lede { font-size: clamp(1.25rem, 2.2vw, 1.6rem); line-height: 1.4; max-width: 32ch; }
+.facts { display: grid; margin: 0; }
+.facts div { display: flex; justify-content: space-between; gap: 16px; padding-block: 8px; border-top: 1px solid var(--band-rule); font-size: 0.98rem; }
+.facts div:last-child { border-bottom: 1px solid var(--band-rule); }
+.facts dt { font-family: var(--mono); font-size: 0.74rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--band-muted); padding-top: 3px; }
+.facts dd { margin: 0; text-align: right; }
+
+.scope { margin: 44px 0 0; background: var(--band-deep); border: 1px solid var(--band-rule); }
+.scope-head { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px 20px; padding: 12px 16px; border-bottom: 1px solid var(--band-rule); font-family: var(--mono); font-size: 0.74rem; color: var(--band-muted); }
+.scope-head b { color: var(--band-ink); font-weight: 500; }
+.legend { display: flex; gap: 16px; flex-wrap: wrap; }
+.legend i { display: inline-block; width: 16px; height: 2px; vertical-align: middle; margin-right: 6px; }
+.scope canvas { display: block; width: 100%; height: 230px; }
+.scope-ctrl { display: grid; grid-template-columns: minmax(0, 1.4fr) repeat(3, minmax(0, 0.7fr)); gap: 16px 28px; align-items: end; padding: 16px; border-top: 1px solid var(--band-rule); }
+.scope-ctrl label { display: grid; gap: 8px; font-family: var(--mono); font-size: 0.76rem; color: var(--band-muted); }
+.scope-ctrl label output { color: var(--band-ink); }
+.scope-ctrl input[type="range"] { width: 100%; accent-color: var(--trace-est); }
+.read { display: grid; gap: 2px; font-family: var(--mono); font-size: 0.74rem; color: var(--band-muted); }
+.read b { font-family: var(--display); font-weight: 700; font-size: 1.5rem; color: var(--band-ink); font-variant-numeric: tabular-nums; line-height: 1.15; }
+.read.hi b { color: var(--trace-est); }
+.scope-cap { font-family: var(--mono); font-size: 0.74rem; color: var(--band-muted); margin-top: 12px; max-width: 90ch; line-height: 1.55; }
+.cta { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
+.btn { font-family: var(--display); font-weight: 600; font-size: 0.9rem; padding: 14px 22px; text-decoration: none; border: 1.5px solid var(--band-ink); color: var(--band-ink); }
+.btn.solid { background: var(--band-ink); color: var(--band); }
+.btn:hover { text-decoration: underline; }
+
+/* ---------- sections ---------- */
+section { padding-block: 88px 0; }
+.sec-head { display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 10px 40px; margin-bottom: 34px; align-items: baseline; }
+h2 { font-family: var(--display); font-weight: 700; font-size: clamp(1.8rem, 4.6vw, 3.4rem); line-height: 1; letter-spacing: -0.02em; margin: 0; text-wrap: balance; }
+h3 { font-family: var(--display); font-weight: 600; font-size: 1.2rem; line-height: 1.25; letter-spacing: -0.01em; margin: 0; text-wrap: balance; }
+
+.focus { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-top: 2px solid var(--ink); }
+.focus div { padding: 18px 20px 0 0; display: grid; gap: 8px; align-content: start; }
+.focus div + div { padding-left: 20px; border-left: 1px solid var(--rule); }
+.focus .tag { font-family: var(--mono); font-size: 0.72rem; color: var(--accent); }
+.focus p { color: var(--muted); font-size: 1rem; line-height: 1.5; }
+
+/* project rows */
+.plist { border-top: 2px solid var(--ink); }
+.prow {
+  all: unset; box-sizing: border-box; cursor: pointer; width: 100%;
+  display: grid; grid-template-columns: 170px minmax(0, 1fr) 210px 90px; gap: 14px 32px; align-items: center;
+  padding-block: 26px; border-bottom: 1px solid var(--rule);
+}
+.prow:hover .ptitle, .prow:focus-visible .ptitle { color: var(--accent); }
+.prow:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+.pstat { display: grid; gap: 2px; }
+.pstat b { font-family: var(--display); font-weight: 800; font-size: clamp(1.8rem, 3.6vw, 2.6rem); line-height: 1; color: var(--accent); font-variant-numeric: tabular-nums; }
+.pstat span { font-family: var(--mono); font-size: 0.7rem; color: var(--muted); }
+.ptitle { font-family: var(--display); font-weight: 600; font-size: clamp(1.15rem, 2.2vw, 1.55rem); line-height: 1.2; letter-spacing: -0.01em; }
+.psum { color: var(--muted); font-size: 1rem; margin-top: 6px; line-height: 1.45; }
+.pmeta { font-family: var(--mono); font-size: 0.74rem; color: var(--muted); line-height: 1.6; }
+.popen { justify-self: end; font-family: var(--mono); font-size: 0.74rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink); border: 1px solid var(--rule); padding: 7px 10px; white-space: nowrap; }
+.prow:hover .popen { border-color: var(--accent); color: var(--accent); }
+
+/* experience / education */
+.rows { border-top: 2px solid var(--ink); }
+.row { display: grid; grid-template-columns: 170px minmax(0, 1fr); gap: 6px 40px; padding-block: 24px; border-bottom: 1px solid var(--rule); }
+.row .when { font-family: var(--mono); font-size: 0.78rem; color: var(--muted); font-variant-numeric: tabular-nums; padding-top: 4px; }
+.row .org { font-family: var(--mono); font-size: 0.78rem; color: var(--accent); margin: 6px 0 10px; }
+.row ul { margin: 0; padding-left: 1.05em; display: grid; gap: 6px; max-width: 72ch; }
+.row li { font-size: 1.02rem; }
+.row li::marker { color: var(--accent); }
+.row p { font-size: 1.02rem; color: var(--muted); }
+
+/* skills */
+.spec { width: 100%; border-collapse: collapse; border-top: 2px solid var(--ink); }
+.spec th, .spec td { text-align: left; vertical-align: top; padding: 14px 0; border-bottom: 1px solid var(--rule); }
+.spec th { width: 200px; padding-right: 24px; font-family: var(--mono); font-size: 0.74rem; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); padding-top: 17px; }
+.spec td { font-size: 1.02rem; }
+
+/* contact */
+.contact { display: grid; gap: 18px; border-top: 2px solid var(--ink); padding-top: 28px; }
+.contact .big { font-family: var(--display); font-weight: 700; font-size: clamp(1.3rem, 5vw, 3.6rem); line-height: 1.05; letter-spacing: -0.02em; overflow-wrap: anywhere; user-select: all; }
+.contact-line { display: flex; gap: 12px 28px; align-items: center; flex-wrap: wrap; font-family: var(--mono); font-size: 0.85rem; }
+.copy { font-family: var(--mono); font-size: 0.78rem; padding: 8px 14px; cursor: pointer; border: 1.5px solid var(--ink); background: transparent; color: var(--ink); }
+.copy:hover { border-color: var(--accent); color: var(--accent); }
+
+/* title block footer */
+footer .wrap { padding-block: 96px 40px; }
+.tblock { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; border: 2px solid var(--ink); }
+.tblock div { padding: 10px 12px; border-right: 1px solid var(--ink); border-bottom: 1px solid var(--ink); display: grid; gap: 2px; min-width: 0; }
+.tblock div:nth-child(4n) { border-right: 0; }
+.tblock div:nth-last-child(-n+4) { border-bottom: 0; }
+.tblock span { font-family: var(--mono); font-size: 0.64rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+.tblock b { font-family: var(--display); font-weight: 600; font-size: 0.85rem; overflow-wrap: anywhere; }
+.tblock .t b { font-size: 1rem; font-weight: 700; text-transform: uppercase; }
+
+/* ---------- detail panel ---------- */
+dialog.pd {
+  margin: 0 0 0 auto; padding: 0; border: 0; height: 100%; max-height: 100%; width: min(780px, 100%); max-width: 100%;
+  background: var(--paper); color: var(--ink); overflow-y: auto; overscroll-behavior: contain;
+  transform: translateX(100%); transition: transform 0.5s cubic-bezier(0.2, 0.75, 0.2, 1);
+  border-left: 2px solid var(--ink);
+}
+dialog.pd.open { transform: none; }
+dialog.pd::backdrop { background: rgba(4, 18, 12, 0.6); opacity: 0; transition: opacity 0.4s; }
+dialog.pd.open::backdrop { opacity: 1; }
+.pd-bar {
+  position: sticky; top: 0; z-index: 2; background: var(--band); color: var(--band-ink);
+  display: flex; justify-content: space-between; align-items: center; gap: 12px;
+  padding: calc(12px + env(safe-area-inset-top, 0px)) max(20px, env(safe-area-inset-right, 0px)) 12px 24px;
+}
+.pd-bar .label { color: var(--band-muted); }
+.pd-close { font-family: var(--mono); font-size: 0.78rem; letter-spacing: 0.06em; text-transform: uppercase; padding: 8px 14px; cursor: pointer; background: transparent; color: var(--band-ink); border: 1.5px solid var(--band-ink); }
+.pd-body { padding: 32px max(24px, env(safe-area-inset-right, 0px)) calc(56px + env(safe-area-inset-bottom, 0px)) 24px; display: grid; gap: 22px; }
+.pd-body h2 { font-size: clamp(1.7rem, 4.5vw, 2.6rem); }
+.pd-body h3 { margin-top: 10px; }
+.pd-meta { display: flex; flex-wrap: wrap; gap: 4px 22px; }
+.tools { font-family: var(--mono); font-size: 0.76rem; color: var(--accent); }
+.pd-body > * { opacity: 1; }
+dialog.pd.open .pd-body > * { animation: up 0.55s cubic-bezier(0.2, 0.75, 0.2, 1) both; }
+dialog.pd.open .pd-body > *:nth-child(2) { animation-delay: 0.05s; }
+dialog.pd.open .pd-body > *:nth-child(3) { animation-delay: 0.1s; }
+dialog.pd.open .pd-body > *:nth-child(n+4) { animation-delay: 0.15s; }
+
+.reqs { margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--rule); }
+.reqs li { display: grid; grid-template-columns: 58px minmax(0, 1fr); gap: 12px; padding-block: 8px; border-bottom: 1px solid var(--rule); font-size: 1rem; }
+.reqs li span { font-family: var(--mono); font-size: 0.72rem; color: var(--accent); padding-top: 4px; }
+.steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; border-top: 2px solid var(--ink); }
+.steps li { padding: 14px 14px 14px 0; display: grid; gap: 4px; align-content: start; border-bottom: 1px solid var(--rule); }
+.steps li:not(:nth-child(3n+1)) { padding-left: 14px; border-left: 1px solid var(--rule); }
+.steps .n { font-family: var(--display); font-weight: 800; font-size: 1.6rem; color: var(--accent); line-height: 1; }
+.steps b { font-family: var(--display); font-weight: 600; font-size: 0.9rem; }
+.steps p { font-size: 0.92rem; color: var(--muted); line-height: 1.4; }
+.vs-wrap { overflow-x: auto; }
+.vs { width: 100%; min-width: 560px; border-collapse: collapse; font-size: 0.96rem; }
+.vs th, .vs td { text-align: left; vertical-align: top; padding: 10px 14px 10px 0; border-bottom: 1px solid var(--rule); }
+.vs thead th { font-family: var(--display); font-weight: 700; font-size: 0.9rem; text-transform: uppercase; border-bottom: 2px solid var(--ink); }
+.vs thead th.pick { color: var(--accent); border-bottom-color: var(--accent); }
+.vs tbody th { font-family: var(--mono); font-size: 0.7rem; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); width: 104px; padding-top: 13px; }
+.vs .out td { font-weight: 600; }
+.vs .out td.pick { color: var(--accent); }
+.spec.ctl { border-top-width: 1px; }
+.spec.ctl th { width: 130px; }
+.clip { display: grid; grid-template-columns: 250px minmax(0, 1fr); gap: 22px; align-items: start; }
+.clip-text { display: grid; gap: 14px; min-width: 0; }
+.vid { margin: 0; display: grid; gap: 8px; min-width: 0; }
+.vid video { display: block; width: 100%; max-width: 100%; aspect-ratio: 478 / 850; object-fit: cover; background: var(--band-deep); border: 1px solid var(--rule); }
+.figs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.figs figure, .diagram { margin: 0; display: grid; gap: 8px; align-content: start; min-width: 0; }
+.figs img { display: block; width: 100%; max-width: 100%; height: 220px; object-fit: contain; background: var(--mat); border: 1px solid var(--rule); padding: 10px; }
+figcaption { font-family: var(--mono); font-size: 0.7rem; color: var(--muted); line-height: 1.5; }
+.diagram-scroll { overflow-x: auto; border: 1px solid var(--rule); background: var(--sheet); padding: 10px 8px; }
+.diagram svg { display: block; width: 100%; min-width: 540px; height: auto; }
+.d-box { fill: var(--paper); stroke: var(--ink); stroke-width: 1.2; }
+.d-acc { stroke: var(--accent); stroke-width: 1.6; }
+.d-dash { stroke-dasharray: 5 4; }
+.d-line { fill: none; stroke: var(--accent); stroke-width: 1.5; }
+.d-dashed { stroke-dasharray: 5 4; }
+.d-head { fill: var(--accent); }
+.d-t { font-family: var(--display); font-weight: 600; font-size: 13px; fill: var(--ink); }
+.d-s { font-family: var(--mono); font-size: 11px; fill: var(--muted); }
+dialog.pd.open .d-line[pathLength] { stroke-dasharray: 100; animation: draw 1.1s 0.35s cubic-bezier(0.4, 0, 0.2, 1) both; }
+
+/* ---------- motion ---------- */
+@keyframes rise { from { transform: translateY(105%); } to { transform: none; } }
+@keyframes up { from { opacity: 0; transform: translateY(26px); } to { opacity: 1; transform: none; } }
+@keyframes draw { from { stroke-dashoffset: 100; } to { stroke-dashoffset: 0; } }
+@keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+h1 .line > span { animation: rise 1s cubic-bezier(0.2, 0.75, 0.2, 1) both; }
+h1 .line + .line > span { animation-delay: 0.12s; }
+.band .eyebrow { animation: fade 0.8s 0.1s both; }
+.intro, .scope { animation: up 0.9s 0.3s cubic-bezier(0.2, 0.75, 0.2, 1) both; }
+.scope { animation-delay: 0.45s; }
+.reveal.in { animation: up 0.8s cubic-bezier(0.2, 0.75, 0.2, 1) both; }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+
+section[id] { scroll-margin-top: 70px; }
+
+/* ---------- responsive ---------- */
+@media (max-width: 900px) {
+  .prow { grid-template-columns: 130px minmax(0, 1fr) auto; }
+  .prow .pmeta { display: none; }
+  .focus { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .focus div:nth-child(3) { padding-left: 0; border-left: 0; }
+  .focus div:nth-child(n+3) { border-top: 1px solid var(--rule); margin-top: 18px; }
+}
+@media (max-width: 760px) {
+  .intro, .sec-head, .row, .figs { grid-template-columns: minmax(0, 1fr); }
+  .clip { grid-template-columns: minmax(0, 1fr); }
+  .vid video { max-height: 70vh; width: auto; margin: 0 auto; }
+  .scope-ctrl { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .scope-ctrl label { grid-column: 1 / -1; }
+  .scope canvas { height: 190px; }
+  .prow { grid-template-columns: minmax(0, 1fr) auto; gap: 10px 16px; padding-block: 22px; }
+  .prow .pstat { grid-column: 1 / -1; display: flex; align-items: baseline; gap: 10px; }
+  .spec th { width: 116px; padding-right: 12px; }
+  .steps { grid-template-columns: minmax(0, 1fr); }
+  .steps li, .steps li:not(:nth-child(3n+1)) { padding-left: 0; border-left: 0; grid-template-columns: 40px minmax(0, 1fr); column-gap: 10px; }
+  .steps .n { grid-row: span 2; }
+  .tblock { grid-template-columns: 1fr 1fr; }
+  .tblock div { border-right: 1px solid var(--ink) !important; border-bottom: 1px solid var(--ink) !important; }
+  .tblock div:nth-child(2n) { border-right: 0 !important; }
+  .tblock div:nth-last-child(-n+2) { border-bottom: 0 !important; }
+  .tblock .t { grid-column: 1 / -1; border-right: 0 !important; }
+  section { padding-block: 64px 0; }
+}
+@media (max-width: 520px) {
+  .top ul li.ext:first-of-type { padding-left: 0; border-left: 0; }
+  .focus { grid-template-columns: minmax(0, 1fr); }
+  .focus div, .focus div + div { padding-left: 0; border-left: 0; }
+  .focus div + div { border-top: 1px solid var(--rule); margin-top: 18px; }
+  .read b { font-size: 1.2rem; }
+}
+</style>
+</head>
+<body>
+
+<header class="top gut">
+  <div class="wrap">
+    <a class="mark" href="#top">Alexander Aoun</a>
+    <ul>
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="#experience">Experience</a></li>
+      <li><a href="#skills">Skills</a></li>
+      <li><a href="#contact">Contact</a></li>
+      <li class="ext"><a href="mailto:alexanderaoun0@gmail.com">Email</a></li>
+      <li class="ext"><a href="https://www.linkedin.com/in/alexander-aoun">LinkedIn</a></li>
+    </ul>
+  </div>
+</header>
+
+<div class="band gut" id="top">
+  <div class="wrap">
+    <div class="eyebrow">Biomedical electronics · MSc ETH Zurich</div>
+    <h1 id="name"><span class="line"><span>Alexander</span></span><span class="line"><span>Aoun</span></span></h1>
+
+    <div class="intro">
+      <p class="lede">I build low-power sensors, the patient-safe hardware around them, and the signal processing that turns noisy physiology into data you can trust.</p>
+      <dl class="facts">
+        <div><dt>Now</dt><dd>MSc EEIT, ETH Zurich</dd></div>
+        <div><dt>Industry</dt><dd>TE Connectivity, sensors</dd></div>
+        <div><dt>Led</dt><dd>EPFL Rocket Team electronics</dd></div>
+        <div><dt>Speaks</dt><dd>FR · EN · AR, learning DE</dd></div>
+      </dl>
+    </div>
+
+    <figure class="scope" aria-labelledby="scopecap">
+      <div class="scope-head">
+        <span><b>Live</b> · Kalman filter on a noisy pressure signal</span>
+        <span class="legend"><span><i style="background:var(--trace-raw)"></i>measured</span><span><i style="background:var(--trace-est)"></i>filtered</span><span><i style="background:var(--band-ink);height:1px"></i>true</span></span>
+      </div>
+      <canvas id="scope" aria-hidden="true"></canvas>
+      <div class="scope-ctrl">
+        <label for="noise">Drag to change sensor noise · σ = <output id="noiseVal" for="noise">0.25</output>
+          <input id="noise" type="range" min="0.03" max="0.6" step="0.01" value="0.25">
+        </label>
+        <div class="read"><span>Raw error</span><b id="rawErr">0.250</b></div>
+        <div class="read hi"><span>Filtered error</span><b id="estErr">0.080</b></div>
+        <div class="read"><span>Noise removed</span><b id="gain">68%</b></div>
+      </div>
+    </figure>
+    <p class="scope-cap" id="scopecap">Simulated sensor, computed live in your browser. Errors are RMS against the true signal over the visible window.</p>
+
+    <div class="cta">
+      <a class="btn solid" href="#projects">See projects</a>
+      <a class="btn" href="https://www.linkedin.com/in/alexander-aoun">LinkedIn</a>
+      <a class="btn" href="https://github.com/alexanderaoun">GitHub</a>
+      <a class="btn" href="mailto:alexanderaoun0@gmail.com">alexanderaoun0@gmail.com</a>
+    </div>
+  </div>
+</div>
+
+<main class="gut">
+  <div class="wrap">
+
+    <section id="focus">
+      <div class="sec-head reveal"><span class="label">Focus</span><h2>Where electronics meets medicine</h2></div>
+      <div class="focus reveal">
+        <div><span class="tag">EEG · EMG · BMI</span><h3>Neurotechnology</h3><p>Neural and muscle interfaces, from electrodes and front ends to decoding.</p></div>
+        <div><span class="tag">ECG · PPG · pressure</span><h3>Wearable sensors</h3><p>Low-power biosensors and CMOS readout for monitoring outside the clinic.</p></div>
+        <div><span class="tag">sense · decide · dose</span><h3>Closed-loop therapy</h3><p>Devices like insulin pumps, where sensing, control and safety work together.</p></div>
+        <div><span class="tag">user needs · test</span><h3>Assistive tech</h3><p>Built with the people who use it, like the hand-opening glove.</p></div>
+      </div>
+    </section>
+
+    <section id="projects">
+      <div class="sec-head reveal"><span class="label">Projects · click to open</span><h2>Selected work</h2></div>
+      <div class="plist">
+        <button class="prow reveal" type="button" data-open="glove" aria-haspopup="dialog">
+          <span class="pstat"><b data-count="62">62</b><span>safety unit tests</span></span>
+          <span><span class="ptitle">Assistive hand-opening glove</span><span class="psum" style="display:block">A powered exoskeleton and a mechanical ratchet glove, built with a person with tetraplegia.</span></span>
+          <span class="pmeta">HackaHealth Zurich<br>Oct – Nov 2026</span>
+          <span class="popen">Open +</span>
+        </button>
+        <button class="prow reveal" type="button" data-open="quad" aria-haspopup="dialog">
+          <span class="pstat"><b>Only 1</b><span>student to finish</span></span>
+          <span><span class="ptitle">Nano-quadrotor control</span><span class="psum" style="display:block">LQG and PID control from MATLAB to C++ on a real 30 g drone. The only student in the class to finish, flying square manoeuvres.</span></span>
+          <span class="pmeta">ETH Zurich<br>2025</span>
+          <span class="popen">Open +</span>
+        </button>
+        <button class="prow reveal" type="button" data-open="car" aria-haspopup="dialog">
+          <span class="pstat"><b>1:10</b><span>scale race car</span></span>
+          <span><span class="ptitle">F1TENTH autonomous racing</span><span class="psum" style="display:block">The full autonomy stack, from 3D LiDAR to steering. With video of a lap.</span></span>
+          <span class="pmeta">ETH Zurich<br>2025</span>
+          <span class="popen">Watch +</span>
+        </button>
+        <button class="prow reveal" type="button" data-open="ml" aria-haspopup="dialog">
+          <span class="pstat"><b>R² 0.93</b><span>sensor reconstruction</span></span>
+          <span><span class="ptitle">Machine learning for outbreak detection and sensor data</span><span class="psum" style="display:block">Found the 2 of 5 measurements that detect infection, and rebuilt a failed sensor's data.</span></span>
+          <span class="pmeta">EPFL<br>2024</span>
+          <span class="popen">Open +</span>
+        </button>
+      </div>
+    </section>
+
+    <section id="experience">
+      <div class="sec-head reveal"><span class="label">Experience</span><h2>Where I've worked</h2></div>
+      <div class="rows">
+        <div class="row reveal">
+          <div class="when">Jun – Aug 2026</div>
+          <div>
+            <h3>Electronics Research Intern, Sensors</h3>
+            <div class="org">TE Connectivity · Switzerland</div>
+            <ul>
+              <li>Characterised more than 10 MEMS pressure sensor modules and variants for wearables, including the ultra-low-power MS5849-30BA36 for smartwatches: sensitivity, thermal drift, noise and current consumption.</li>
+              <li>Built an automated Python test bench (instrument control, temperature and pressure sweeps, real-time acquisition). A full measurement campaign went from days of manual work to hours, single sweeps from hours to minutes, and runs could go overnight unattended.</li>
+              <li>Analysed the data with NumPy and Pandas and presented in weekly design reviews to the hardware and firmware team.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="row reveal">
+          <div class="when">Feb – Jun 2025</div>
+          <div>
+            <h3>Teaching Assistant, Circuits and Systems</h3>
+            <div class="org">EPFL · EE-111</div>
+            <ul><li>Led weekly exercise sessions for 30+ students on circuit analysis and design.</li></ul>
+          </div>
+        </div>
+        <div class="row reveal">
+          <div class="when">Sep 2024 – Feb 2025</div>
+          <div>
+            <h3>Electronics Team Leader</h3>
+            <div class="org"><a href="https://epflrocketteam.ch">EPFL Rocket Team</a></div>
+            <ul>
+              <li>Designed and bench-validated 3+ high-voltage PCBs, up to 2000 V, and Power Processing Units for plasma, arcjet and Hall-effect thrusters.</li>
+              <li>Led 4 engineers, set milestones and presented to the team and external sponsors.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="row reveal">
+          <div class="when">Jun – Aug 2023</div>
+          <div>
+            <h3>Engineering Intern</h3>
+            <div class="org">Bits to Atoms · Lebanon</div>
+            <ul><li>Programmed robotic arms for additive and subtractive manufacturing on client projects.</li></ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="education">
+      <div class="sec-head reveal"><span class="label">Education</span><h2>Studies</h2></div>
+      <div class="rows">
+        <div class="row reveal"><div class="when">Expected 2028</div><div><h3>MSc Electrical Engineering and Information Technology</h3><div class="org">ETH Zurich · Biomedical Engineering focus</div><p>Bioelectronics and biosensors, CMOS circuits for biological and molecular sensing, ultrasound, physiology.</p></div></div>
+        <div class="row reveal"><div class="when">Jul 2026</div><div><h3>BEng Electrical and Electronics Engineering</h3><div class="org">EPFL · GPA 5.0 / 6.0</div><p>Exchange year 2025–2026 at ETH Zurich: analog IC design, embedded systems, VLSI, autonomous systems.</p></div></div>
+        <div class="row reveal"><div class="when">Jun 2023</div><div><h3>Baccalaureate with High Honors</h3><div class="org">Grand Lycée Franco-Libanais · Lebanon</div><p>Represented Lebanon in Mathematics and Physics Olympiads at international level.</p></div></div>
+      </div>
+    </section>
+
+    <section id="skills">
+      <div class="sec-head reveal"><span class="label">Skills</span><h2>Toolbox</h2></div>
+      <table class="spec reveal">
+        <tbody>
+          <tr><th>Biosignals</th><td>Surface EMG recording, ECG with an analog front end and a wearable, PPG, EEG analysis, MEMS pressure and motion sensing</td></tr>
+          <tr><th>Medical devices</th><td>Patient isolation and grounding, risk analysis and FMEA, design controls from user needs to verification, biocompatibility, testing with patients</td></tr>
+          <tr><th>Hardware</th><td>Sensor characterisation, test-bench automation, PCB design (Altium, KiCad), analog IC design (Cadence), SystemVerilog, ESP32 firmware, SolidWorks, 3D printing</td></tr>
+          <tr><th>Control</th><td>LQR / LQG, Kalman filtering, PID tuning, cascaded loops and lead compensation, root locus, Bode and delay margins, non-minimum-phase systems, pure pursuit</td></tr>
+          <tr><th>Analysis</th><td>Biosignal filtering, computer vision, statistics · LTspice and Cadence simulation</td></tr>
+          <tr><th>Software</th><td>Python (NumPy, Pandas, scikit-learn), C, C++, MATLAB, ROS2, SQL, Spark, Linux, Git, Docker</td></tr>
+          <tr><th>Coursework</th><td>CMOS Electronics for Biological and Molecular Sensing, Biosensors and Bioelectronics, Cell and Molecular Biology, Ultrasound Fundamentals, Learning in Deep Artificial and Biological Neural Networks, Biomedical Engineering, Image Analysis and Computer Vision</td></tr>
+          <tr><th>Languages</th><td>French, English, Arabic (fluent) · German (learning)</td></tr>
+          <tr><th>Outside work</th><td>Coaching and teaching, Lebanese Red Cross trainee (2022), scuba diving, alpine skiing, trail running</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="contact">
+      <div class="sec-head reveal"><span class="label">Contact</span><h2>Sensors, hardware, medtech. Write to me.</h2></div>
+      <div class="contact reveal">
+        <span class="big" id="email">alexanderaoun0@gmail.com</span>
+        <div class="contact-line">
+          <button class="copy" id="copy-email" type="button">Copy email</button>
+          <a href="https://www.linkedin.com/in/alexander-aoun">linkedin.com/in/alexander-aoun</a>
+          <a href="https://github.com/alexanderaoun">github.com/alexanderaoun</a>
+          <span>Zurich, Switzerland</span>
+        </div>
+      </div>
+    </section>
+  </div>
+</main>
+
+<footer class="gut">
+  <div class="wrap">
+    <div class="tblock" aria-label="Title block">
+      <div class="t"><span>Title</span><b>Alexander Aoun · Portfolio</b></div>
+      <div><span>Drawn by</span><b>A. Aoun</b></div>
+      <div><span>Rev</span><b>2026.11</b></div>
+      <div><span>Sheet</span><b>1 of 1</b></div>
+      <div><span>Discipline</span><b>Biomedical electronics</b></div>
+      <div><span>Location</span><b>Zurich, CH</b></div>
+      <div><span>Contact</span><b>alexanderaoun0@gmail.com</b></div>
+      <div><span>Date</span><b>2026-11-04</b></div>
+    </div>
+  </div>
+</footer>
+
+<dialog class="pd" id="pd" aria-labelledby="pd-title">
+  <div class="pd-bar"><span class="label" id="pd-kind">Project</span><button class="pd-close" id="pd-close" type="button">Close</button></div>
+  <div class="pd-body" id="pd-body"></div>
+</dialog>
+
+<template id="t-glove">
+  <h2 id="pd-title">Assistive hand-opening glove</h2>
+  <div class="pd-meta label"><span>HackaHealth Zurich</span><span>Oct – Nov 2026</span><span>Team project</span></div>
+  <p>Paul has incomplete tetraplegia. He can close his right hand, but he can't open it again on his own, so letting go of his wheelchair rims or putting down a cup depends on someone else. We started with Paul himself: an interview, measurements of his finger mobility and strength, and a 3D scan of his hand so every printed part fits him.</p>
+  <h3>What Paul needs</h3>
+  <ul class="reqs">
+    <li><span>REQ-1</span>Opens all four fingers, on demand</li>
+    <li><span>REQ-2</span>Works without fine finger control</li>
+    <li><span>REQ-3</span>Holds open by itself, lets go instantly</li>
+    <li><span>REQ-4</span>Comfortable and breathable all day</li>
+    <li><span>REQ-5</span>Easy to put on, mostly one-handed</li>
+    <li><span>REQ-6</span>Nothing to charge</li>
+  </ul>
+  <h3>How it went</h3>
+  <ol class="steps">
+    <li><span class="n">1</span><b>Research</b><p>Interview, mobility and strength, 3D hand scan</p></li>
+    <li><span class="n">2</span><b>Brainstorm</b><p>Glove concepts, EMG sensors, motors</p></li>
+    <li><span class="n">3</span><b>Powered build</b><p>Electronic exoskeleton with force feedback</p></li>
+    <li><span class="n">4</span><b>Decision</b><p>Ratchet chosen over motors for reliability</p></li>
+    <li><span class="n">5</span><b>Iterate</b><p>Clips and finger support fixed after testing</p></li>
+    <li><span class="n">6</span><b>Final</b><p>Four-finger mechanical glove, sized to Paul</p></li>
+  </ol>
+  <h3>Two builds, one choice</h3>
+  <div class="vs-wrap">
+    <table class="vs">
+      <thead><tr><th></th><th>Powered exoskeleton</th><th class="pick">Mechanical ratchet</th></tr></thead>
+      <tbody>
+        <tr><th>Actuation</th><td>ESP32 drives a tendon motor along the back of the hand</td><td>Snowboard-binding ratchet on the forearm, pumped with the side of the hand</td></tr>
+        <tr><th>Force</th><td>Motor current as force feedback caps the pull on his fingers</td><td>Balance bars share the pull so one stiff finger can't block the rest</td></tr>
+        <tr><th>Trigger</th><td>Two IMUs detect when Paul starts to open; button, wrist flick or surface EMG as alternatives</td><td>Lever pump, no fine finger control needed</td></tr>
+        <tr><th>Holding</th><td>Lets go the moment he starts to close</td><td>Holds with zero power; lift the tab to release</td></tr>
+        <tr><th>Safety</th><td>Fail-safe release, watchdog, force and battery limits, 62 unit tests</td><td>Manual release tab always within reach</td></tr>
+        <tr class="out"><th>Outcome</th><td>Working prototype, set aside for battery and failure risk (REQ-6)</td><td class="pick">Final prototype, built and tested with Paul</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="figs">
+    <figure><img src="images/glove-wiring.jpg" alt="Wiring diagram of the powered glove: ESP32, DRV8833 motor driver, N20 motor with encoder, INA219 current sensor, MPU6050 IMU, LiPo battery and charger"><figcaption>Powered build: ESP32, motor driver, encoder motor, current sensing for the force limit, IMU.</figcaption></figure>
+    <figure><img src="images/glove-cad.png" alt="CAD assembly of the final glove: forearm cuff with ratchet, hand plate with balance bars, cords to clips on four fingers"><figcaption>Final glove: forearm ratchet, balance bars and four-finger clips, generated from Paul's measurements.</figcaption></figure>
+  </div>
+  <span class="tools">ESP32 · force feedback · IMU intent detection · surface EMG · risk analysis · parametric CAD · 3D printing · user research</span>
+</template>
+
+<template id="t-quad">
+  <h2 id="pd-title">Nano-quadrotor control</h2>
+  <div class="pd-meta label"><span>ETH Zurich</span><span>2025</span></div>
+  <p>Designed LQR controllers and Kalman filter state estimators in MATLAB, then ported them to C++ and flew them on a real 30 g nano-quadrotor. It hovered stably and flew set manoeuvres such as squares. I was the only student in the class to finish the project.</p>
+  <h3>Controllers designed and compared</h3>
+  <table class="spec ctl">
+    <tbody>
+      <tr><th>LQG</th><td>LQR state feedback with a Kalman filter estimator on the full quadrotor model. Designed in MATLAB, flown in C++.</td></tr>
+      <tr><th>PID</th><td>Roll-axis PID, tuned by sweeping the integral and derivative times and comparing the step responses.</td></tr>
+      <tr><th>P vs PD</th><td>Root locus with a proportional and a PD controller to find the gains that stabilise the attitude loop.</td></tr>
+      <tr><th>Cascaded</th><td>Inner attitude loop with an outer position loop, closed with two lead compensators designed for phase margin.</td></tr>
+    </tbody>
+  </table>
+  <h3>Analysis</h3>
+  <table class="spec ctl">
+    <tbody>
+      <tr><th>Delay margin</th><td>Maximum actuator delay the loop tolerates at different gains, read from the phase margin.</td></tr>
+      <tr><th>Frequency</th><td>Bode diagrams and loop shaping for the derivative time and lead parameters.</td></tr>
+      <tr><th>Unstable zeros</th><td>Non-minimum-phase behaviour and what it limits in the achievable closed loop.</td></tr>
+      <tr><th>Noise</th><td>How sensor noise and drift propagate through the estimator into the flight.</td></tr>
+    </tbody>
+  </table>
+  <figure class="diagram"><div class="diagram-scroll"><svg viewBox="0 0 760 236" role="img" aria-label="LQG control loop: reference and estimated state feed an LQR controller, which drives the nano-quadrotor through an actuator delay; noisy sensor readings go to a Kalman filter that produces the state estimate fed back to the controller"><defs><marker id="arrq" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" class="d-head"/></marker></defs>
+<text x="14" y="72" class="d-s">reference r</text>
+<line x1="86" y1="68" x2="112" y2="68" class="d-line" pathLength="100" marker-end="url(#arrq)"/>
+<circle cx="124" cy="68" r="11" class="d-box"/><text x="124" y="73" class="d-t" text-anchor="middle">+</text>
+<text x="132" y="100" class="d-s">−</text>
+<line x1="135" y1="68" x2="168" y2="68" class="d-line" pathLength="100" marker-end="url(#arrq)"/>
+<rect x="170" y="38" width="150" height="60" class="d-box d-acc"/><text x="245.0" y="65.0" class="d-t" text-anchor="middle">LQR</text><text x="245.0" y="83.0" class="d-s" text-anchor="middle">u = −K·x̂</text>
+<line x1="320" y1="68" x2="378" y2="68" class="d-line" pathLength="100" marker-end="url(#arrq)"/>
+<text x="349" y="58" class="d-s" text-anchor="middle">delay τ</text>
+<rect x="380" y="38" width="160" height="60" class="d-box"/><text x="460.0" y="65.0" class="d-t" text-anchor="middle">Nano-quadrotor</text><text x="460.0" y="83.0" class="d-s" text-anchor="middle">m = 30 g</text>
+<line x1="540" y1="68" x2="588" y2="68" class="d-line" pathLength="100" marker-end="url(#arrq)"/>
+<rect x="590" y="38" width="156" height="60" class="d-box"/><text x="668.0" y="65.0" class="d-t" text-anchor="middle">Sensors</text><text x="668.0" y="83.0" class="d-s" text-anchor="middle">IMU · noise · drift</text>
+<path d="M668 98 V180 H542" class="d-line" pathLength="100" marker-end="url(#arrq)"/>
+<text x="676" y="146" class="d-s">measurements y</text>
+<rect x="380" y="150" width="160" height="60" class="d-box d-acc"/><text x="460.0" y="177.0" class="d-t" text-anchor="middle">Kalman filter</text><text x="460.0" y="195.0" class="d-s" text-anchor="middle">state estimate x̂</text>
+<path d="M380 180 H124 V81" class="d-line" pathLength="100" marker-end="url(#arrq)"/>
+<text x="252" y="172" class="d-s" text-anchor="middle">x̂ fed back</text>
+</svg></div><figcaption>LQG loop as designed in MATLAB and run in C++ on the quadrotor. The delay τ and the sensor noise are what the stability analysis looked at.</figcaption></figure>
+  <span class="tools">MATLAB · C++ · python-control · LQR / LQG · Kalman filtering · PID · lead compensation · root locus · Bode</span>
+</template>
+
+<template id="t-car">
+  <h2 id="pd-title">F1TENTH autonomous racing</h2>
+  <div class="pd-meta label"><span>ETH Zurich</span><span>2025</span></div>
+  <div class="clip">
+    <figure class="vid"><video src="images/f1tenth-lap.mp4" poster="images/f1tenth-poster.jpg" autoplay muted loop playsinline controls preload="metadata" aria-label="Our F1TENTH car driving a lap of the track autonomously"></video><figcaption>Our car lapping the track in the ETH hangar, driving itself.</figcaption></figure>
+    <div class="clip-text">
+      <p>Built the autonomy stack of a 1:10 scale racing car on embedded hardware: 3D LiDAR-based localisation, a spline raceline planner, pure pursuit tracking, and follow-the-gap for reactive obstacle avoidance.</p>
+    </div>
+  </div>
+  <figure class="diagram"><div class="diagram-scroll"><svg viewBox="0 0 760 214" role="img" aria-label="F1TENTH autonomy stack: LiDAR scan feeds localisation, spline path planning and pure pursuit tracking, which command the car; a follow-the-gap path from the LiDAR handles reactive obstacle avoidance"><defs><marker id="arrc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" class="d-head"/></marker></defs>
+<rect x="14" y="30" width="150" height="60" class="d-box"/><text x="89.0" y="57.0" class="d-t" text-anchor="middle">3D LiDAR</text><text x="89.0" y="75.0" class="d-s" text-anchor="middle">point cloud</text>
+<line x1="164" y1="60" x2="200" y2="60" class="d-line" pathLength="100" marker-end="url(#arrc)"/>
+<rect x="202" y="30" width="166" height="60" class="d-box"/><text x="285.0" y="57.0" class="d-t" text-anchor="middle">Localisation</text><text x="285.0" y="75.0" class="d-s" text-anchor="middle">pose on the map</text>
+<line x1="368" y1="60" x2="400" y2="60" class="d-line" pathLength="100" marker-end="url(#arrc)"/>
+<rect x="402" y="30" width="160" height="60" class="d-box d-acc"/><text x="482.0" y="57.0" class="d-t" text-anchor="middle">Path planning</text><text x="482.0" y="75.0" class="d-s" text-anchor="middle">spline raceline</text>
+<line x1="562" y1="60" x2="594" y2="60" class="d-line" pathLength="100" marker-end="url(#arrc)"/>
+<rect x="596" y="30" width="150" height="60" class="d-box d-acc"/><text x="671.0" y="57.0" class="d-t" text-anchor="middle">Pure pursuit</text><text x="671.0" y="75.0" class="d-s" text-anchor="middle">steering · speed</text>
+<path d="M671 90 V170 H462" class="d-line" pathLength="100" marker-end="url(#arrc)"/>
+<rect x="300" y="144" width="160" height="54" class="d-box"/><text x="380.0" y="168.0" class="d-t" text-anchor="middle">1:10 car · ROS2</text><text x="380.0" y="186.0" class="d-s" text-anchor="middle">embedded computer</text>
+<path d="M89 90 V144" class="d-line d-dashed" marker-end="url(#arrc)"/>
+<rect x="14" y="146" width="150" height="52" class="d-box d-dash"/><text x="89.0" y="169.0" class="d-t" text-anchor="middle">Follow-the-gap</text><text x="89.0" y="187.0" class="d-s" text-anchor="middle">reactive avoidance</text>
+<line x1="164" y1="172" x2="298" y2="172" class="d-line d-dashed" marker-end="url(#arrc)"/>
+</svg></div><figcaption>Autonomy stack built over the course labs. The dashed path is the reactive follow-the-gap planner for obstacles.</figcaption></figure>
+  <span class="tools">ROS2 · Python · C++ · 3D LiDAR · pure pursuit</span>
+</template>
+
+<template id="t-ml">
+  <h2 id="pd-title">Machine learning for outbreak detection and sensor data</h2>
+  <div class="pd-meta label"><span>EPFL · Data Science with Python</span><span>Dec 2024</span><span>Two projects</span></div>
+
+  <h3>1 · Detecting infection with fewer invasive measurements</h3>
+  <p>A simulated outbreak with five measurements per person. The goal was to find which measurements actually matter, so less invasive data has to be collected, while catching as many infected people as possible.</p>
+  <table class="spec ctl">
+    <tbody>
+      <tr><th>Features</th><td>Correlation matrix and random-forest feature importance showed that 2 of the 5 measurements (x1, x2) carry the signal.</td></tr>
+      <tr><th>Model A</th><td>Random forest tuned by grid search: 108 configurations, 5-fold cross-validation, 540 fits. 94% accuracy, 98% precision on infected cases.</td></tr>
+      <tr><th>Model B</th><td>Depth-3 decision tree as an interpretable baseline: 91% accuracy.</td></tr>
+      <tr><th>Threshold</th><td>ROC and precision-recall curves to study the trade-off between missed infections and false alarms.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>2 · Rebuilding a failed sensor</h3>
+  <p>A sensor network logged every 15 minutes for two months, until one sensor failed on 20 February. The task was to reconstruct its missing readings from the two working sensors.</p>
+  <table class="spec ctl">
+    <tbody>
+      <tr><th>Features</th><td>Hour of day and weekday (with cyclic sine and cosine encoding) for the daily and weekly pattern, plus time lags of up to 30 minutes on both sensors.</td></tr>
+      <tr><th>Baseline</th><td>Linear regression on the raw signals: mean absolute error 0.83.</td></tr>
+      <tr><th>+ Lags, time</th><td>Same regression with lags and time features: error down to 0.47.</td></tr>
+      <tr><th>My model</th><td>Random forest on lagged and time features: R² 0.93, mean absolute error 0.24 on held-out data.</td></tr>
+    </tbody>
+  </table>
+  <span class="tools">Python · pandas · scikit-learn · random forests · decision trees · grid search · cross-validation · feature engineering · ROC / PR analysis</span>
+</template>
+
+<script>
+(function () {
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // keep each word of the name on one line, whatever font loads
+  var nameEl = document.getElementById('name');
+  function fitName() {
+    nameEl.style.fontSize = '';
+    var avail = nameEl.clientWidth, widest = 0;
+    nameEl.querySelectorAll('.line > span').forEach(function (s) { widest = Math.max(widest, s.scrollWidth); });
+    if (widest > avail && widest > 0) {
+      var cur = parseFloat(getComputedStyle(nameEl).fontSize);
+      nameEl.style.fontSize = Math.floor(cur * avail / widest * 0.98) + 'px';
+    }
+  }
+  fitName();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitName);
+  window.addEventListener('resize', fitName);
+
+  // scroll reveal: content is visible at rest; it only animates as it enters the viewport
+  if (!reduce && 'IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) { e.target.classList.add('in'); countUp(e.target); io.unobserve(e.target); }
+      });
+    }, { threshold: 0 });
+    document.querySelectorAll('.reveal').forEach(function (el) {
+      if (el.getBoundingClientRect().top > window.innerHeight) io.observe(el);
+    });
+  }
+  function countUp(root) {
+    root.querySelectorAll('[data-count]').forEach(function (el) {
+      var end = parseInt(el.getAttribute('data-count'), 10), t0 = null;
+      function tick(ts) {
+        if (!t0) t0 = ts;
+        var p = Math.min(1, (ts - t0) / 900), v = Math.round(end * (1 - Math.pow(1 - p, 3)));
+        el.textContent = v;
+        if (p < 1) requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
+    });
+  }
+
+  // project detail panel
+  var dlg = document.getElementById('pd'), body = document.getElementById('pd-body'), kind = document.getElementById('pd-kind');
+  var lastBtn = null;
+  function openPanel(id, btn) {
+    var tpl = document.getElementById('t-' + id); if (!tpl) return;
+    lastBtn = btn;
+    body.innerHTML = ''; body.appendChild(tpl.content.cloneNode(true));
+    kind.textContent = id === 'glove' ? 'Case study' : 'Project';
+    dlg.scrollTop = 0;
+    if (typeof dlg.showModal === 'function') { try { dlg.showModal(); } catch (e) { dlg.setAttribute('open', ''); } }
+    else dlg.setAttribute('open', '');
+    document.body.classList.add('lock');
+    requestAnimationFrame(function () { requestAnimationFrame(function () { dlg.classList.add('open'); }); });
+  }
+  function closePanel() {
+    dlg.querySelectorAll('video').forEach(function (v) { try { v.pause(); } catch (e) {} });
+    dlg.classList.remove('open');
+    document.body.classList.remove('lock');
+    setTimeout(function () {
+      if (typeof dlg.close === 'function' && dlg.open) dlg.close(); else dlg.removeAttribute('open');
+      if (lastBtn) lastBtn.focus();
+    }, reduce ? 0 : 420);
+  }
+  document.querySelectorAll('[data-open]').forEach(function (b) {
+    b.addEventListener('click', function () { openPanel(b.getAttribute('data-open'), b); });
+  });
+  document.getElementById('pd-close').addEventListener('click', closePanel);
+  dlg.addEventListener('cancel', function (e) { e.preventDefault(); closePanel(); });
+  dlg.addEventListener('click', function (e) { if (e.target === dlg) closePanel(); });
+
+  // copy email
+  var cbtn = document.getElementById('copy-email');
+  cbtn.addEventListener('click', function () {
+    var el = document.getElementById('email');
+    var fallback = function () {
+      var r = document.createRange(); r.selectNodeContents(el);
+      var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+      cbtn.textContent = 'Selected';
+    };
+    try {
+      navigator.clipboard.writeText(el.textContent).then(function () {
+        cbtn.textContent = 'Copied';
+        setTimeout(function () { cbtn.textContent = 'Copy email'; }, 1600);
+      }, fallback);
+    } catch (e) { fallback(); }
+  });
+
+  // live scope: 1-D Kalman filter on a simulated pressure signal
+  var c = document.getElementById('scope'), ctx = c.getContext('2d');
+  var noiseEl = document.getElementById('noise');
+  var N = 320, t = 0, truthA = [], rawA = [], estA = [], x = 0, P = 1, Q = 0.0015;
+  function truth(t) {
+    var base = 0.5 * Math.sin(t * 0.028) + 0.18 * Math.sin(t * 0.071 + 1.3);
+    var ph = (t % 140) / 140, pulse = ph < 0.12 ? 0.32 * Math.sin(ph / 0.12 * Math.PI) : 0;
+    return base + pulse - 0.1;
+  }
+  function gauss() { var u = 1 - Math.random(), v = Math.random(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); }
+  function sigma() { return parseFloat(noiseEl.value); }
+  function step() {
+    var s = sigma(), R = s * s, tr = truth(t), z = tr + gauss() * s;
+    P += Q; var K = P / (P + R); x += K * (z - x); P *= (1 - K);
+    truthA.push(tr); rawA.push(z); estA.push(x); t++;
+    if (truthA.length > N) { truthA.shift(); rawA.shift(); estA.shift(); }
+  }
+  // re-run the whole window at the current noise so the readouts match what is on screen
+  function rerun() {
+    var start = t - N; t = Math.max(0, start); truthA = []; rawA = []; estA = []; P = 1; x = truth(t);
+    for (var i = 0; i < 60; i++) { step(); }            // let the filter settle
+    truthA = []; rawA = []; estA = [];
+    for (var j = 0; j < N; j++) step();
+  }
+  rerun();
+
+  function tok(n) { return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
+  function size() {
+    var dpr = window.devicePixelRatio || 1, r = c.getBoundingClientRect();
+    c.width = Math.max(1, Math.round(r.width * dpr)); c.height = Math.max(1, Math.round(r.height * dpr));
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  function rms(a, b) { var s = 0; for (var i = 0; i < a.length; i++) { var d = a[i] - b[i]; s += d * d; } return Math.sqrt(s / a.length); }
+  var rawErrEl = document.getElementById('rawErr'), estErrEl = document.getElementById('estErr'), gainEl = document.getElementById('gain'), nv = document.getElementById('noiseVal');
+  function readouts() {
+    var re = rms(rawA, truthA), ee = rms(estA, truthA);
+    rawErrEl.textContent = re.toFixed(3);
+    estErrEl.textContent = ee.toFixed(3);
+    gainEl.textContent = Math.max(0, Math.round((1 - ee / re) * 100)) + '%';
+    nv.textContent = sigma().toFixed(2);
+  }
+  function draw() {
+    var w = c.clientWidth, h = c.clientHeight;
+    var grid = tok('--band-rule'), raw = tok('--trace-raw'), est = tok('--trace-est'), ink = tok('--band-ink');
+    ctx.clearRect(0, 0, w, h);
+    ctx.strokeStyle = grid; ctx.lineWidth = 1;
+    for (var g = 1; g < 8; g++) { var y = Math.round(h * g / 8) + 0.5; ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke(); }
+    for (var g2 = 1; g2 < 16; g2++) { var gx = Math.round(w * g2 / 16) + 0.5; ctx.beginPath(); ctx.moveTo(gx, 0); ctx.lineTo(gx, h); ctx.stroke(); }
+    var scale = h * 0.34, mid = h / 2;
+    function line(arr, color, width, alpha) {
+      ctx.globalAlpha = alpha; ctx.strokeStyle = color; ctx.lineWidth = width; ctx.lineJoin = 'round'; ctx.beginPath();
+      for (var i = 0; i < arr.length; i++) {
+        var px = i / (N - 1) * w, py = mid - Math.max(-1.4, Math.min(1.4, arr[i])) * scale;
+        i ? ctx.lineTo(px, py) : ctx.moveTo(px, py);
+      }
+      ctx.stroke(); ctx.globalAlpha = 1;
+    }
+    line(rawA, raw, 1.2, 1);
+    line(truthA, ink, 1, 0.45);
+    line(estA, est, 2.6, 1);
+    var ly = mid - estA[estA.length - 1] * scale;
+    ctx.fillStyle = est; ctx.beginPath(); ctx.arc(w - 4, ly, 4, 0, Math.PI * 2); ctx.fill();
+  }
+  size(); draw(); readouts();
+  window.addEventListener('resize', function () { size(); draw(); });
+  noiseEl.addEventListener('input', function () { rerun(); draw(); readouts(); });
+  try { window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', draw); } catch (e) {}
+  try { new MutationObserver(draw).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] }); } catch (e) {}
+  if (!reduce) {
+    var last = 0, frames = 0;
+    (function loop(ts) {
+      if (ts - last > 33) { step(); step(); draw(); last = ts; if (++frames % 8 === 0) readouts(); }
+      requestAnimationFrame(loop);
+    })(0);
+  }
+})();
+</script>
+</body>
+</html>
